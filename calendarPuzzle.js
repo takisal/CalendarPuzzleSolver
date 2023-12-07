@@ -3,8 +3,8 @@ const dayNumbers = [
 ];
 const weekdays = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const weekdaysSet = new Set(["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"]);
-const monthsSet = new Set(["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]);
+const weekdaysSet = new Set(weekdays);
+const monthsSet = new Set(months);
 const allDateCombinations = new Set();
 for (let dayNumber = 1; dayNumber <= 31; dayNumber++) {
   for (let j = 0; j < 7; j++) {
@@ -186,6 +186,9 @@ for (let i = 0; i < pieces.length; i++) {
   filterPiece(pieces[i]);
 }
 function checkValid(currentPiece, remainingCoordsSet, x, y) {
+  if (!remainingCoordsSet.has(y + "," + x)) {
+    return false;
+  }
   let coordsAdded = [];
   let monthsAdded = 0;
   let weekdaysAdded = 0;
@@ -217,7 +220,7 @@ function checkValid(currentPiece, remainingCoordsSet, x, y) {
   }
   return { remainingCoords: newRemainingCoords, monthsAdded, weekdaysAdded, dayNumbersAdded };
 }
-
+let visited = new Set();
 const unshownDays = allDateCombinations;
 function recur(remainingCoordsSet, rounds, monthsCount, weekdaysCount, dayNumbersCount) {
   if (monthsCount == 0 || weekdaysCount == 0 || dayNumbersCount == 0) {
@@ -233,13 +236,12 @@ function recur(remainingCoordsSet, rounds, monthsCount, weekdaysCount, dayNumber
       console.log("Got day: ", dayShown);
       console.log("Remaining days: ", unshownDays.size);
     }
-
     return;
   }
 
   for (let k = 0; k < pieces[rounds].length; k++) {
     let currentPiece = pieces[rounds][k];
-    for (let y = 0; y < board.length; y++) {
+    for (let y = monthsCount == 1 ? 2 : 0; y < board.length; y++) {
       for (let x = 0; x < board[0].length; x++) {
         let validityObject = checkValid(currentPiece, remainingCoordsSet, x, y);
         if (validityObject != false) {
