@@ -97,18 +97,8 @@ function rotate(piece) {
   }
   return newPiece;
 }
-function flipVertically(piece) {
-  let newPiece = [];
-  for (let y = piece.length - 1; y >= 0; y--) {
-    let newRow = [];
-    for (let x = 0; x < piece[y].length; x++) {
-      newRow.push(piece[y][x]);
-    }
-    newPiece.push(newRow);
-  }
-  return newPiece;
-}
-function flipHorizontally(piece) {
+
+function flip(piece) {
   let newPiece = [];
   for (let y = 0; y < piece.length; y++) {
     let newRow = [];
@@ -128,17 +118,11 @@ for (let i = 0; i < rawPieces.length; i++) {
     currentPiece = rotate(currentPiece);
     piece.push(currentPiece);
   }
-  let hFlippedPiece = flipHorizontally(rawPieces[i]);
-  piece.push(hFlippedPiece);
+  let flippedPiece = flip(rawPieces[i]);
+  piece.push(flippedPiece);
   for (let i = 0; i < 3; i++) {
-    hFlippedPiece = rotate(hFlippedPiece);
-    piece.push(hFlippedPiece);
-  }
-  let vFlippedPiece = flipVertically(rawPieces[i]);
-  piece.push(vFlippedPiece);
-  for (let i = 0; i < 3; i++) {
-    vFlippedPiece = rotate(vFlippedPiece);
-    piece.push(vFlippedPiece);
+    flippedPiece = rotate(flippedPiece);
+    piece.push(flippedPiece);
   }
   pieces.push(piece);
 }
@@ -176,7 +160,7 @@ function filterPiece(pieceOrientations) {
 for (let i = 0; i < pieces.length; i++) {
   filterPiece(pieces[i]);
 }
-
+console.log(pieces.map((x) => x.length));
 function checkValid(currentPiece, x, y, usedCoordsMask) {
   let coordsAdded = [];
   let monthsAdded = 0;
@@ -228,6 +212,7 @@ for (let i = 0; i < 60; i++) {
 }
 let visited = new Set();
 const unshownDays = allDateCombinations;
+console.time("Single day");
 function recur(rounds, monthsCount, weekdaysCount, dayNumbersCount, usedCoordsMask) {
   if (monthsCount == 0 || weekdaysCount == 0 || dayNumbersCount == 0) {
     return;
@@ -241,13 +226,14 @@ function recur(rounds, monthsCount, weekdaysCount, dayNumbersCount, usedCoordsMa
       unshownDays.delete(dayShown);
       console.log("Got day: ", dayShown);
       console.log("Remaining days: ", unshownDays.size);
+      console.timeLog("Single day");
     }
     return;
   }
 
   for (let k = 0; k < pieces[rounds].length; k++) {
     let currentPiece = pieces[rounds][k];
-    for (let z = monthsCount == 1 ? 14 : 0; z < (weekdaysCount == 1 ? 45 : usedCoordsMask.length); z++) {
+    for (let z = monthsCount == 1 ? 14 : 0; z < (weekdaysCount == 1 ? 45 : 48); z++) {
       if (usedCoordsMask[z] == true) {
         continue;
       }
@@ -283,4 +269,5 @@ prep(combine(7, 1));
 prep(combine(7, 2));
 prep(combine(7, 3));
 recur(0, 12, 7, 31, mask);
+console.log(unshownDays);
 console.log(unshownDays.size);
