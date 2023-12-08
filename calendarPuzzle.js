@@ -160,7 +160,6 @@ function filterPiece(pieceOrientations) {
 for (let i = 0; i < pieces.length; i++) {
   filterPiece(pieces[i]);
 }
-console.log(pieces.map((x) => x.length));
 function checkValid(currentPiece, x, y, usedCoordsMask) {
   let coordsAdded = [];
   let monthsAdded = 0;
@@ -212,7 +211,6 @@ for (let i = 0; i < 60; i++) {
 }
 let visited = new Set();
 const unshownDays = allDateCombinations;
-console.time("Single day");
 function recur(rounds, monthsCount, weekdaysCount, dayNumbersCount, usedCoordsMask) {
   if (monthsCount == 0 || weekdaysCount == 0 || dayNumbersCount == 0) {
     return;
@@ -226,7 +224,6 @@ function recur(rounds, monthsCount, weekdaysCount, dayNumbersCount, usedCoordsMa
       unshownDays.delete(dayShown);
       console.log("Got day: ", dayShown);
       console.log("Remaining days: ", unshownDays.size);
-      console.timeLog("Single day");
     }
     return;
   }
