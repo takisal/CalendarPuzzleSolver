@@ -6,7 +6,6 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const weekdaysSet = new Set(weekdays);
 const monthsSet = new Set(months);
 const allDateCombinations = new Set();
-
 for (let dayNumber = 1; dayNumber <= 31; dayNumber++) {
   for (let j = 0; j < 7; j++) {
     for (let k = 0; k < 12; k++) {
@@ -15,7 +14,8 @@ for (let dayNumber = 1; dayNumber <= 31; dayNumber++) {
     }
   }
 }
-let board = [
+
+const board = [
   ["Jan", "Feb", "Mar", "Apr", "May", "Jun", null],
   ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", null],
   [1, 2, 3, 4, 5, 6, 7],
