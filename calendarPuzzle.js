@@ -14,7 +14,6 @@ for (let dayNumber = 1; dayNumber <= 31; dayNumber++) {
     }
   }
 }
-
 const board = [
   ["Jan", "Feb", "Mar", "Apr", "May", "Jun", null],
   ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", null],
