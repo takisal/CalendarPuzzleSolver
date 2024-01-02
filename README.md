@@ -1,5 +1,5 @@
 # Instructions
-To run, simply type "node calendarPuzzleSolver.js"
+To run, simply type "node calendarPuzzleSolver.js" 
 ## Requirements
 Must have nodejs installed (recommended >= v18.14.0)
 ### Notes
