@@ -14,26 +14,30 @@ for (let dayNumber = 1; dayNumber <= 31; dayNumber++) {
     }
   }
 }
-function newBoard() {
-  return [
-    ["Jan", "Feb", "Mar", "Apr", "May", "Jun", null],
-    ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", null],
-    [1, 2, 3, 4, 5, 6, 7],
-    [8, 9, 10, 11, 12, 13, 14],
-    [15, 16, 17, 18, 19, 20, 21],
-    [22, 23, 24, 25, 26, 27, 28],
-    [29, 30, 31, "Sun", "Mon", "Tues", "Wed"],
-    [null, null, null, null, "Thur", "Fri", "Sat"],
-  ];
-}
-function copyBoard(inputBoard) {
-  let result = [];
-  for (let i = 0; i < inputBoard.length; i++) {
-    result.push(inputBoard[i].slice());
+let board = [
+  ["Jan", "Feb", "Mar", "Apr", "May", "Jun", null],
+  ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec", null],
+  [1, 2, 3, 4, 5, 6, 7],
+  [8, 9, 10, 11, 12, 13, 14],
+  [15, 16, 17, 18, 19, 20, 21],
+  [22, 23, 24, 25, 26, 27, 28],
+  [29, 30, 31, "Sun", "Mon", "Tues", "Wed"],
+  [null, null, null, null, "Thur", "Fri", "Sat"],
+];
+let coordMap = new Map();
+for (let i = 0; i < board.length; i++) {
+  for (let j = 0; j < board[i].length; j++) {
+    coordMap.set(combine(i, j), board[i][j]);
   }
-  return result;
 }
-const board = newBoard();
+function combine(y, x) {
+  return y * 7 + x;
+}
+function uncombine(z) {
+  let x = z % 7;
+  let y = (z - x) / 7;
+  return { y, x };
+}
 let rawPieces = [
   [
     [true, true, true],
@@ -93,18 +97,8 @@ function rotate(piece) {
   }
   return newPiece;
 }
-function flipVertically(piece) {
-  let newPiece = [];
-  for (let y = piece.length - 1; y >= 0; y--) {
-    let newRow = [];
-    for (let x = 0; x < piece[y].length; x++) {
-      newRow.push(piece[y][x]);
-    }
-    newPiece.push(newRow);
-  }
-  return newPiece;
-}
-function flipHorizontally(piece) {
+
+function flip(piece) {
   let newPiece = [];
   for (let y = 0; y < piece.length; y++) {
     let newRow = [];
@@ -124,50 +118,31 @@ for (let i = 0; i < rawPieces.length; i++) {
     currentPiece = rotate(currentPiece);
     piece.push(currentPiece);
   }
-  let hFlippedPiece = flipHorizontally(rawPieces[i]);
-  piece.push(hFlippedPiece);
+  let flippedPiece = flip(rawPieces[i]);
+  piece.push(flippedPiece);
   for (let i = 0; i < 3; i++) {
-    hFlippedPiece = rotate(hFlippedPiece);
-    piece.push(hFlippedPiece);
-  }
-  let vFlippedPiece = flipVertically(rawPieces[i]);
-  piece.push(vFlippedPiece);
-  for (let i = 0; i < 3; i++) {
-    vFlippedPiece = rotate(vFlippedPiece);
-    piece.push(vFlippedPiece);
+    flippedPiece = rotate(flippedPiece);
+    piece.push(flippedPiece);
   }
   pieces.push(piece);
 }
-let monthsCoordsSet = new Set();
-let weekdaysCoordsSet = new Set();
-let coordMap = new Map();
-for (let i = 0; i < board.length; i++) {
-  for (let j = 0; j < board[i].length; j++) {
-    let spot = board[i][j];
-    if (monthsSet.has(spot)) {
-      monthsCoordsSet.add(i + "," + j);
-    } else if (weekdaysSet.has(spot)) {
-      weekdaysCoordsSet.add(i + "," + j);
-    }
-    coordMap.set(i + "," + j, board[i][j]);
-  }
-}
-function findShownDay(remainingCoordsSet) {
-  if (remainingCoordsSet.size != 3) {
-    return "";
-  }
+
+function findShownDay(coordsMask) {
   let month = "";
   let weekday = "";
   let dayNumber = "";
-  remainingCoordsSet.forEach((spot) => {
-    if (monthsCoordsSet.has(spot)) {
-      month = spot;
-    } else if (weekdaysCoordsSet.has(spot)) {
-      weekday = spot;
-    } else {
-      dayNumber = spot;
+  for (let i = 0; i < coordsMask.length; i++) {
+    if (coordsMask[i] == false) {
+      if (i < 14) {
+        month = i;
+      } else if (i < 45) {
+        dayNumber = i;
+      } else {
+        weekday = i;
+      }
     }
-  });
+  }
+
   let dateString = coordMap.get(weekday) + ", " + coordMap.get(month) + " " + coordMap.get(dayNumber);
   return dateString;
 }
@@ -185,10 +160,7 @@ function filterPiece(pieceOrientations) {
 for (let i = 0; i < pieces.length; i++) {
   filterPiece(pieces[i]);
 }
-function checkValid(currentPiece, remainingCoordsSet, x, y) {
-  if (!remainingCoordsSet.has(y + "," + x)) {
-    return false;
-  }
+function checkValid(currentPiece, x, y, usedCoordsMask) {
   let coordsAdded = [];
   let monthsAdded = 0;
   let weekdaysAdded = 0;
@@ -196,38 +168,55 @@ function checkValid(currentPiece, remainingCoordsSet, x, y) {
   for (let i = 0; i < currentPiece.length; i++) {
     for (let j = 0; j < currentPiece[i].length; j++) {
       if (currentPiece[i][j] == true) {
-        if (x + j >= 7 || y + i >= 8 || x + j < 0 || y + i < 0) {
+        let singleDimensionCoord = combine(y + i, x + j);
+        if (usedCoordsMask[singleDimensionCoord]) {
           return false;
         }
-        if (!remainingCoordsSet.has(y + i + "," + (x + j))) {
-          return false;
-        }
-        let spot = board[y + i][x + j];
-        if (monthsSet.has(spot)) {
+        if (singleDimensionCoord < 14) {
           monthsAdded++;
-        } else if (weekdaysSet.has(spot)) {
-          weekdaysAdded++;
-        } else {
+        } else if (singleDimensionCoord < 45) {
           dayNumbersAdded++;
+        } else {
+          weekdaysAdded++;
         }
-        coordsAdded.push(y + i + "," + (x + j));
+        coordsAdded.push(singleDimensionCoord);
       }
     }
   }
-  let newRemainingCoords = new Set(remainingCoordsSet);
+  let newMask = usedCoordsMask.slice();
+
   for (let i = 0; i < coordsAdded.length; i++) {
-    newRemainingCoords.delete(coordsAdded[i]);
+    newMask[coordsAdded[i]] = true;
   }
-  return { remainingCoords: newRemainingCoords, monthsAdded, weekdaysAdded, dayNumbersAdded };
+  return {
+    monthsAdded,
+    weekdaysAdded,
+    dayNumbersAdded,
+    nextMask: newMask,
+  };
+}
+let split = [];
+function splitFunction(root) {
+  let a = 0;
+  let b = 0;
+  if (root < 29) {
+    a = 2 ** root;
+  } else {
+    b = 2 ** (root - 29);
+  }
+  return { a, b };
+}
+for (let i = 0; i < 60; i++) {
+  split.push(splitFunction(i));
 }
 let visited = new Set();
 const unshownDays = allDateCombinations;
-function recur(remainingCoordsSet, rounds, monthsCount, weekdaysCount, dayNumbersCount) {
+function recur(rounds, monthsCount, weekdaysCount, dayNumbersCount, usedCoordsMask) {
   if (monthsCount == 0 || weekdaysCount == 0 || dayNumbersCount == 0) {
     return;
   }
   if (rounds == 10) {
-    dayShown = findShownDay(remainingCoordsSet);
+    dayShown = findShownDay(usedCoordsMask);
     if (dayShown == "") {
       return;
     }
@@ -241,34 +230,41 @@ function recur(remainingCoordsSet, rounds, monthsCount, weekdaysCount, dayNumber
 
   for (let k = 0; k < pieces[rounds].length; k++) {
     let currentPiece = pieces[rounds][k];
-    for (let y = monthsCount == 1 ? 2 : 0; y < board.length; y++) {
-      for (let x = 0; x < board[0].length; x++) {
-        let validityObject = checkValid(currentPiece, remainingCoordsSet, x, y);
-        if (validityObject != false) {
-          let { remainingCoords, monthsAdded, weekdaysAdded, dayNumbersAdded } = validityObject;
-          recur(
-            remainingCoords,
-            rounds + 1,
-            monthsCount - monthsAdded,
-            weekdaysCount - weekdaysAdded,
-            dayNumbersCount - dayNumbersAdded
-          );
-        }
+    for (let z = monthsCount == 1 ? 14 : 0; z < (weekdaysCount == 1 ? 45 : 48); z++) {
+      if (usedCoordsMask[z] == true) {
+        continue;
+      }
+      let { x, y } = uncombine(z);
+      let j = currentPiece[0].length - 1;
+      let i = currentPiece.length - 1;
+      if (x + j >= 7 || y + i >= 8 || x + j < 0 || y + i < 0) {
+        continue;
+      }
+      let validityObject = checkValid(currentPiece, x, y, usedCoordsMask);
+      if (validityObject != false) {
+        let { monthsAdded, weekdaysAdded, dayNumbersAdded, nextMask } = validityObject;
+        recur(
+          rounds + 1,
+          monthsCount - monthsAdded,
+          weekdaysCount - weekdaysAdded,
+          dayNumbersCount - dayNumbersAdded,
+          nextMask
+        );
       }
     }
   }
 }
-let coordsSet = new Set();
-for (let i = 0; i < 7; i++) {
-  for (let j = 0; j < 8; j++) {
-    coordsSet.add(j + "," + i);
-  }
+
+let mask = new Array(56).fill(false);
+function prep(x) {
+  mask[x] = true;
 }
-coordsSet.delete("0,6");
-coordsSet.delete("1,6");
-coordsSet.delete("7,0");
-coordsSet.delete("7,1");
-coordsSet.delete("7,2");
-coordsSet.delete("7,3");
-recur(coordsSet, 0, 12, 7, 31);
+prep(combine(0, 6));
+prep(combine(1, 6));
+prep(combine(7, 0));
+prep(combine(7, 1));
+prep(combine(7, 2));
+prep(combine(7, 3));
+recur(0, 12, 7, 31, mask);
+console.log(unshownDays);
 console.log(unshownDays.size);
