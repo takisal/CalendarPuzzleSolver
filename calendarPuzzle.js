@@ -6,6 +6,7 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const weekdaysSet = new Set(weekdays);
 const monthsSet = new Set(months);
 const allDateCombinations = new Set();
+
 for (let dayNumber = 1; dayNumber <= 31; dayNumber++) {
   for (let j = 0; j < 7; j++) {
     for (let k = 0; k < 12; k++) {
