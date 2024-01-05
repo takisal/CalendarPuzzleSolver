@@ -3,8 +3,6 @@ const dayNumbers = [
 ];
 const weekdays = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const weekdaysSet = new Set(weekdays);
-const monthsSet = new Set(months);
 const allDateCombinations = new Set();
 for (let dayNumber = 1; dayNumber <= 31; dayNumber++) {
   for (let j = 0; j < 7; j++) {
@@ -209,7 +207,6 @@ function splitFunction(root) {
 for (let i = 0; i < 60; i++) {
   split.push(splitFunction(i));
 }
-let visited = new Set();
 const unshownDays = allDateCombinations;
 function recur(rounds, monthsCount, weekdaysCount, dayNumbersCount, usedCoordsMask) {
   if (monthsCount == 0 || weekdaysCount == 0 || dayNumbersCount == 0) {
