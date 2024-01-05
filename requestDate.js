@@ -316,7 +316,7 @@ function searchForSolution(weekdayTarget, monthTarget, dateTarget) {
   prep(combine(7, 3));
   recur(0, 12, 7, 31, mask);
 }
-let inputArray = process.argv.slice(2).map((d) => d[0].toUpperCase() + d.substr(1));
+let inputArray = process.argv.slice(2).map((d) => d[0].toUpperCase() + d.substr(1).toLowerCase());
 let inputDay;
 let inputWeekday;
 let inputMonth;
