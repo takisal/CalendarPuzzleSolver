@@ -4,6 +4,7 @@ const dayNumbers = [
 const weekdays = ["Sun", "Mon", "Tues", "Wed", "Thur", "Fri", "Sat"];
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const allDateCombinations = new Set();
+
 for (let dayNumber = 1; dayNumber <= 31; dayNumber++) {
   for (let j = 0; j < 7; j++) {
     for (let k = 0; k < 12; k++) {
