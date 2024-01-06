@@ -250,7 +250,7 @@ function searchForSolution(weekdayTarget, monthTarget, dateTarget) {
     if (targetDateFlag) {
       return;
     }
-    if (monthsCount == 0 || weekdaysCount == 0 || dayNumbersCount == 0) {
+    if (monthsCount === 0 || weekdaysCount === 0 || dayNumbersCount === 0) {
       return;
     }
 
@@ -273,7 +273,7 @@ function searchForSolution(weekdayTarget, monthTarget, dateTarget) {
     for (let k = 0; k < pieces[rounds].length; k++) {
       let currentPiece = pieces[rounds][k];
       for (let z = monthsCount == 1 ? 14 : 0; z < (weekdaysCount == 1 ? 45 : 48); z++) {
-        if (rounds == 1 && targetDateFlag == false) {
+        if (rounds === 1 && targetDateFlag === false) {
           progress += 1 / (pieces[rounds].length * 46) ** 2;
           progressCalculations++;
           if (progressCalculations % 10 == 0) {
